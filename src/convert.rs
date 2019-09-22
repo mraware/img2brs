@@ -21,7 +21,7 @@ pub fn convert(path: &String) {
     let img = get_image(path);
     let dim = img.dimensions();
     let size = (5, 5, 2);
-    let vertical = false;
+    let vertical = true;
     let mut bricks: Vec<Brick> = vec![];
 
 
@@ -55,7 +55,8 @@ fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgb
     let x_adj = (x * size.0 * 2 + size.0) as i32;
     let y_adj = (y * size.1 * 2 + size.1) as i32;
 
-    let position = if vertical { (x_adj, size.2 as i32, -y_adj+(dim.1 as i32)) } else { (x_adj, y_adj, size.2 as i32) };
+
+    let position = if vertical { (x_adj, size.2 as i32, -y_adj+(dim.1 as i32 * size.1 as i32 * 2)) } else { (x_adj, y_adj, size.2 as i32) };
 
     let color_mode: ColorMode = ColorMode::Custom(color);
 
