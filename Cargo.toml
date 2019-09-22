@@ -1,0 +1,10 @@
+[package]
+name = "img2brs"
+version = "0.1.0"
+authors = ["mraware14 <aaronware14@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+brs = "0.1"
