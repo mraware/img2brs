@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 brs = "0.1"
+image = "0.22.2"
