@@ -27,7 +27,7 @@ pub fn convert(path: &String, size: (u32, u32, u32), asset_name_index: u32, vert
     for x in 0..dim.0 {
         for y in 0..dim.1 {
             let px = img.get_pixel(x, y);
-            if px[3] > 0 && !(material_index == 2 && px[3] < 150) {
+            if px[3] > 0 && !(material_index == 2 && px[3] < 100) {
                 let brick = pixel_to_brick(x, y, size, vertical, px, dim, asset_name_index, material_index);
                 bricks.push(brick);
             }
