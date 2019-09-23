@@ -1,3 +1,4 @@
+pub mod lists;
 use std::path::Path;
 use std::fs::File;
 
@@ -17,19 +18,19 @@ use brs::{
     chrono::DateTime
 };
 
-pub fn convert(path: &String) {
+pub fn convert(path: &String, size: (u32, u32, u32), asset_name_index: u32, vertical: bool, material_index: u32) {
     let img = get_image(path);
     let dim = img.dimensions();
-    let size = (5, 5, 2);
-    let vertical = true;
     let mut bricks: Vec<Brick> = vec![];
 
 
     for x in 0..dim.0 {
         for y in 0..dim.1 {
             let px = img.get_pixel(x, y);
-            let brick = pixel_to_brick(x, y, size, vertical, px, dim);
-            bricks.push(brick);
+            if px[3] > 0 && !(material_index == 2 && px[3] < 150) {
+                let brick = pixel_to_brick(x, y, size, vertical, px, dim, asset_name_index, material_index);
+                bricks.push(brick);
+            }
         }
     }
 
@@ -49,26 +50,25 @@ fn get_image(path: &str) -> DynamicImage {
     return img;
 }
 
-fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32)) -> Brick {
+fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32), asset_name_index: u32, material_index: u32) -> Brick {
     let color: Color = Color::from_rgba(px[0], px[1], px[2], px[3]);
 
-    let x_adj = (x * size.0 * 2 + size.0) as i32;
-    let y_adj = (y * size.1 * 2 + size.1) as i32;
+    let x_adj = if vertical { (x * size.1 * 2 + size.1) as i32 } else { (x * size.0 * 2 + size.0) as i32  };
+    let y_adj = if vertical { (y * size.0 * 2 + size.0) as i32 } else { (y * size.1 * 2 + size.1) as i32 as i32 };
 
-
-    let position = if vertical { (x_adj, size.2 as i32, -y_adj+(dim.1 as i32 * size.1 as i32 * 2)) } else { (x_adj, y_adj, size.2 as i32) };
+    let position = if vertical { (x_adj, size.2 as i32, -y_adj+(dim.1 as i32 * size.0 as i32 * 2)) } else { (x_adj, y_adj, size.2 as i32) };
 
     let color_mode: ColorMode = ColorMode::Custom(color);
 
     let brick = Brick {
-        asset_name_index: 1,
+        asset_name_index: asset_name_index,
         size,
         position,
         direction: if vertical { brs::Direction::YPositive } else { brs::Direction::ZPositive },
         rotation: if vertical { brs::Rotation::Deg0 } else { brs::Rotation::Deg0 } ,
         collision: true,
         visibility: true,
-        material_index: 0,
+        material_index: material_index,
         color: color_mode,
         owner_index: 0
     };
@@ -91,30 +91,15 @@ fn write_brs(path: &String, bricks: Vec<Brick>) {
     let file_path = Path::new(&file_path_string);
 
     let author = User {
-        id: Uuid::parse_str("fa577b9e-f2be-493f-a30a-3789b02ba70b").unwrap(),
-        name: String::from("Aware")
+        id: Uuid::parse_str("ffffffff-ffff-ffff-ffff-ffffffffffff").unwrap(),
+        name: String::from("PUBLIC")
     };
 
     let brick_owners = vec![
         User {
-            id: Uuid::parse_str("fa577b9e-f2be-493f-a30a-3789b02ba70b").unwrap(),
-            name: String::from("Aware")
-        },
-        User {
             id: Uuid::parse_str("ffffffff-ffff-ffff-ffff-ffffffffffff").unwrap(),
             name: String::from("PUBLIC")
         }
-    ];
-
-    let brick_assets = vec![
-        String::from("PB_DefaultBrick"),
-        String::from("PB_DefaultTile")
-    ];
-    let materials = vec![
-        String::from("BMC_Plastic"),
-        String::from("BMC_Glow"),
-        String::from("BMC_Metallic"),
-        String::from("BMC_Hologram")
     ];
 
     let write_data = WriteData {
@@ -123,9 +108,9 @@ fn write_brs(path: &String, bricks: Vec<Brick>) {
         description: String::from("Generated with img2brs."),
         save_time: DateTime::from(std::time::SystemTime::now()),
         mods: vec![],
-        brick_assets,
+        brick_assets: lists::get_brick_assets(),
         colors: vec![],
-        materials,
+        materials: lists::get_materials(),
         brick_owners,
         bricks
     };
