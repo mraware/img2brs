@@ -1,4 +1,6 @@
 pub mod lists;
+use std::io::Write;
+
 use std::path::Path;
 use std::fs::File;
 
@@ -15,11 +17,31 @@ use brs::{
     WriteData,
     User,
     uuid::Uuid,
-    chrono::DateTime
+    chrono::offset::Utc
 };
 
-pub fn convert(path: &String, size: (u32, u32, u32), asset_name_index: u32, vertical: bool, material_index: u32) {
-    let img = get_image(path);
+pub fn convert_path(path: &String, size: (u32, u32, u32), asset_name_index: u32, vertical: bool, material_index: u32) {
+  let img = get_image(path);
+
+  let path_parse = Path::new(path);
+  let file_name: String = match path_parse.file_stem() {
+      Some(name) => match name.to_str() {
+          Some(success) => String::from(success),
+          _ => panic!("I miss null")
+      },
+      _ => panic!("No file name")
+  };
+  let mut folder_path: String = String::from(path_parse.parent().unwrap().to_str().unwrap());
+  folder_path.push_str("/");
+  let file_path_string = format!("{}{}{}", folder_path, file_name, ".brs");
+  let file_path = Path::new(&file_path_string);
+
+  let mut file = File::create(file_path).unwrap();
+
+  convert(&img, &mut file, size, asset_name_index, vertical, material_index);
+}
+
+pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, size: (u32, u32, u32), asset_name_index: u32, vertical: bool, material_index: u32) {
     let dim = img.dimensions();
     let mut bricks: Vec<Brick> = vec![];
 
@@ -34,7 +56,7 @@ pub fn convert(path: &String, size: (u32, u32, u32), asset_name_index: u32, vert
         }
     }
 
-    write_brs(path, bricks);
+    write_brs(writer, bricks);
 }
 
 fn get_image(path: &str) -> DynamicImage {
@@ -76,20 +98,7 @@ fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgb
     return brick;
 }
 
-fn write_brs(path: &String, bricks: Vec<Brick>) {
-    let path_parse = Path::new(path);
-    let file_name: String = match path_parse.file_stem() {
-        Some(name) => match name.to_str() {
-            Some(success) => String::from(success),
-            _ => panic!("I miss null")
-        },
-        _ => panic!("No file name")
-    };
-    let mut folder_path: String = String::from(path_parse.parent().unwrap().to_str().unwrap());
-    folder_path.push_str("/");
-    let file_path_string = format!("{}{}{}", folder_path, file_name, ".brs");
-    let file_path = Path::new(&file_path_string);
-
+fn write_brs<T: Write>(mut writer: &mut T, bricks: Vec<Brick>) {
     let author = User {
         id: Uuid::parse_str("ffffffff-ffff-ffff-ffff-ffffffffffff").unwrap(),
         name: String::from("PUBLIC")
@@ -106,7 +115,7 @@ fn write_brs(path: &String, bricks: Vec<Brick>) {
         map: String::from("Plate"),
         author,
         description: String::from("Generated with img2brs."),
-        save_time: DateTime::from(std::time::SystemTime::now()),
+        save_time: Utc::now(),
         mods: vec![],
         brick_assets: lists::get_brick_assets(),
         colors: vec![],
@@ -115,7 +124,5 @@ fn write_brs(path: &String, bricks: Vec<Brick>) {
         bricks
     };
 
-    let mut file = File::create(file_path).unwrap();
-
-    brs::write_save(&mut file, &write_data).unwrap();
+    brs::write_save(&mut writer, &write_data).unwrap();
 }
