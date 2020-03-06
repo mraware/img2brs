@@ -4,9 +4,31 @@ version = "0.2.0"
 authors = ["mraware14 <aaronware14@gmail.com>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
 
 [dependencies]
-brs = "0.1"
-image = "0.22.2"
-spinners = "1.0.0"
+brs = { path="../brs", version = "0.1", features = ["wasmbind"] }
+image = { version = "0.23.0", default-features = false, features = ["gif", "jpeg", "ico", "png", "pnm", "tga", "tiff", "webp", "bmp", "hdr", "dxt", "dds"] } 
+wasm-bindgen-futures = "0.4.9"
+js-sys = "0.3.36"
+console_error_panic_hook = { version = "0.1.1", optional = true }
+
+[dependencies.wasm-bindgen]
+version = "0.2"
+features = [
+  "serde-serialize"
+]
+
+[dependencies.web-sys]
+version = "0.3.36"
+features = [
+  "Blob",
+  "EventTarget",
+  "File",
+  "FileReader",
+  "FilePropertyBag"
+]
