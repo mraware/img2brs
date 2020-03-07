@@ -79,3 +79,8 @@ C:\path\to\img2brs.exe --vertical true --size "10 10 10" --brick_asset 1 --mater
 ```
 6. Now you can drag and drop images onto the shortcut and it will use these options
 
+
+
+## WebAssembly Usage
+1. Run ```wasm-pack build``` to generate a JavaScript package
+2. TODO
