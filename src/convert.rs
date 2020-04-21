@@ -43,8 +43,7 @@ pub fn convert_path(path: &String, size: (u32, u32, u32), asset_name_index: u32,
 
 pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, size: (u32, u32, u32), asset_name_index: u32, vertical: bool, material_index: u32) {
     let dim = img.dimensions();
-    let mut bricks: Vec<Brick> = vec![];
-
+    let mut bricks: Vec<Brick> = Vec::with_capacity((dim.0 * dim.1) as usize);
 
     for x in 0..dim.0 {
         for y in 0..dim.1 {
