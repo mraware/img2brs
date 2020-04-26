@@ -9,6 +9,8 @@ use js_sys::Uint8Array;
 use js_sys::Array;
 use web_sys::File;
 
+use convert::structs::*;
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -17,8 +19,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
 extern {
-    fn alert(s: &str);
-
     #[wasm_bindgen(js_namespace = console)]
     fn log(s: &str);
 
@@ -30,7 +30,7 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn img2brs(image_str: ArrayBuffer, name: &str) -> Result<File, JsValue> {
+pub fn img2brs(image_str: ArrayBuffer, name: &str, options: ImgOptions) -> Result<File, JsValue> {
     utils::set_panic_hook();
 
     let image_uint8 = Uint8Array::new(&JsValue::from(&image_str));
@@ -50,7 +50,7 @@ pub fn img2brs(image_str: ArrayBuffer, name: &str) -> Result<File, JsValue> {
   
     let mut brs_vec: Vec<u8> = vec![];
 
-    convert::convert(&img, &mut brs_vec, (5, 5, 2), 0, false, 0);
+    convert::convert(&img, &mut brs_vec, options);
 
     let uint_array = Uint8Array::new(&JsValue::from_serde(&brs_vec).unwrap());
     let array_buffer = uint_array.buffer();
