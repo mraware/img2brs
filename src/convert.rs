@@ -49,14 +49,16 @@ pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions
     let asset_name_index = options.asset_name_index;
     let vertical = options.vertical;
     let material_index = options.material_index;
+    let remove_alpha = options.remove_alpha;
+    let offset = (options.offset_x,  options.offset_y, options.offset_z);
     let dim = img.dimensions();
     let mut bricks: Vec<Brick> = Vec::with_capacity((dim.0 * dim.1) as usize);
 
     for x in 0..dim.0 {
         for y in 0..dim.1 {
             let px = img.get_pixel(x, y);
-            if px[3] > 0 && !(material_index == 2 && px[3] < 100) {
-                let brick = pixel_to_brick(x, y, size, vertical, px, dim);
+            if px[3] > 0 && !(material_index == 2 && px[3] < 100) && (!remove_alpha || (px[3] >= 255 && remove_alpha)) {
+                let brick = pixel_to_brick(x, y, size, vertical, px, dim, offset);
                 bricks.push(brick);
             }
         }
@@ -78,13 +80,17 @@ fn get_image(path: &str) -> DynamicImage {
     return img;
 }
 
-fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32)) -> Brick {
+fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32), offset: (i32, i32, i32)) -> Brick {
     let color: Color = Color::from_rgba(px[0], px[1], px[2], px[3]);
 
-    let x_adj = if vertical { (x * size.1 * 2 + size.1) as i32 } else { (x * size.0 * 2 + size.0) as i32  };
-    let y_adj = if vertical { (y * size.0 * 2 + size.0) as i32 } else { (y * size.1 * 2 + size.1) as i32 as i32 };
+    let x_adj = if vertical { (x * size.1 * 2 + size.1) as i32 } else { (x * size.0 * 2 + size.0) as i32 };
+    let y_adj = if vertical { (y * size.0 * 2 + size.0) as i32 } else { (y * size.1 * 2 + size.1) as i32 };
 
-    let position = if vertical { (x_adj, size.2 as i32, -y_adj+(dim.1 as i32 * size.0 as i32 * 2)) } else { (x_adj, y_adj, size.2 as i32) };
+    let position = if vertical { 
+      (x_adj+offset.0, (size.2 as i32)+offset.1, -y_adj+(dim.1 as i32 * size.0 as i32 * 2)+offset.2)
+    } else { 
+      (x_adj+offset.0, y_adj+offset.1, (size.2 as i32)+offset.2) 
+    };
 
     let color_mode: ColorMode = ColorMode::Custom(color);
 

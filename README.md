@@ -22,10 +22,12 @@ Advanced usage for customizing the save requires modifying shortcut target or us
 
   Options:
 
-    -v, --vertical      false
-    -s, --size          "5 5 2"
-    -b, --brick_asset   0
-    -m, --material      0
+    -v, --vertical       false
+    -s, --size           "5 5 2"
+    -b, --brick_type     0
+    -m, --material       0
+    -ra, --remove_alpha  false
+    -o, --offset         "0 0 0"
 
 ```
 #### Vertical
@@ -36,7 +38,7 @@ If vertical recieves anything other than "true" it will be false.
 - x and y must be a multiple of 5.
 - z must be a multiple of 2.
 
-#### Current available brick_asset values
+#### Current available brick_type values
 0. DefaultBrick
 1. DefaultTile
 
@@ -45,6 +47,16 @@ If vertical recieves anything other than "true" it will be false.
 1. Glow
 2. Metallic
 3. Hologram
+
+#### Remove Alpha (Transparent) bricks
+If an image has a pixel with its alpha value < 255, a brick will not be made for it.
+
+#### Offset
+- Must be in the format "x y z" (with quotes).
+- Uses microshift units.
+- A 1x1 plate is 10 units wide and 4 units tall.
+- A 1x1 brick is 10 units wide and 12 units tall.
+
 
 ## Examples
 
@@ -75,7 +87,7 @@ C:\path\to\img2brs> img2brs --size "1 1 1" ./path/to/image.png
 4. Under "Target" you should see something along the lines of ```C:\path\to\img2brs.exe```
 5. Add the options so it looks something like:
 ```
-C:\path\to\img2brs.exe --vertical true --size "10 10 10" --brick_asset 1 --material 2
+C:\path\to\img2brs.exe --vertical true --size "10 10 10" --brick_type 1 --material 2
 ```
 6. Now you can drag and drop images onto the shortcut and it will use these options
 
