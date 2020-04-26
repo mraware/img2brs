@@ -34,8 +34,10 @@ fn main() {
 fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
     let file = &args[args.len()-1];
     let mut size = String::from("5 5 2");
+    let mut offset = String::from("0 0 0");
     let mut brick_type = String::from("0");
     let mut vertical = String::from("false");
+    let mut remove_alpha = String::from("false");
     let mut material = String::from("0");
 
 
@@ -58,6 +60,14 @@ fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
                 material = String::from(&args[i+1]);
                 i += 2;
             }
+            "--offset" | "-o" => {
+                offset = String::from(&args[i+1]);
+                i += 2;
+            }
+            "--remove_alpha" | "-ra" => {
+                remove_alpha = String::from(&args[i+1]);
+                i += 2;
+            }
             _ => {
                 i += 1;
             }
@@ -65,6 +75,7 @@ fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
     }
 
     let size_split: Vec<&str> = size.split(" ").collect();
+    let offset_split: Vec<&str> = offset.split(" ").collect();
     let tuple = (
         file,
         ImgOptions { 
@@ -73,7 +84,11 @@ fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
           size_z: size_split[2].parse::<u32>().unwrap(),
           asset_name_index: brick_type.parse::<u32>().unwrap(),
           vertical: if vertical == "true" { true } else { false },
-          material_index: material.parse::<u32>().unwrap()
+          material_index: material.parse::<u32>().unwrap(),
+          remove_alpha: if remove_alpha == "true" { true } else { false },
+          offset_x: offset_split[0].parse::<i32>().unwrap(),
+          offset_y: offset_split[1].parse::<i32>().unwrap(),
+          offset_z: offset_split[2].parse::<i32>().unwrap(),
         }
     );
 
