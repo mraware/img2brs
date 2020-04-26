@@ -4,6 +4,8 @@ use std::env;
 use std::io;
 use std::io::prelude::*;
 
+use convert::structs::*;
+
 fn pause() {
     let mut stdin = io::stdin();
     let mut stdout = io::stdout();
@@ -23,13 +25,13 @@ fn main() {
     } else {
         let options = collect_options(&args);
         println!("Converting please wait...");
-        convert::convert_path(options.0, options.1, options.2, options.3, options.4);
+        convert::convert_path(options.0, options.1);
         println!("Work Complete");
     }
     pause();
 }
 
-fn collect_options(args: &Vec<String>) -> (&String, (u32, u32, u32), u32, bool, u32) {
+fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
     let file = &args[args.len()-1];
     let mut size = String::from("5 5 2");
     let mut brick_type = String::from("0");
@@ -65,14 +67,14 @@ fn collect_options(args: &Vec<String>) -> (&String, (u32, u32, u32), u32, bool, 
     let size_split: Vec<&str> = size.split(" ").collect();
     let tuple = (
         file,
-        (
-            size_split[0].parse::<u32>().unwrap(),
-            size_split[1].parse::<u32>().unwrap(),
-            size_split[2].parse::<u32>().unwrap()
-        ),
-        brick_type.parse::<u32>().unwrap(),
-        if vertical == "true" { true } else { false },
-        material.parse::<u32>().unwrap()
+        ImgOptions { 
+          size_x: size_split[0].parse::<u32>().unwrap(),
+          size_y: size_split[1].parse::<u32>().unwrap(),
+          size_z: size_split[2].parse::<u32>().unwrap(),
+          asset_name_index: brick_type.parse::<u32>().unwrap(),
+          vertical: if vertical == "true" { true } else { false },
+          material_index: material.parse::<u32>().unwrap()
+        }
     );
 
     return tuple
