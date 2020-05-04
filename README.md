@@ -22,12 +22,12 @@ Advanced usage for customizing the save requires modifying shortcut target or us
 
   Options:
 
-    -v, --vertical       false
-    -s, --size           "5 5 2"
-    -b, --brick_type     0
-    -m, --material       0
-    -ra, --remove_alpha  false
-    -o, --offset         "0 0 0"
+    -v,  --vertical       false
+    -s,  --size           "5 5 2"
+    -b,  --brick_type     0
+    -m,  --material       0
+    -ra, --remove_alpha   false
+    -o,  --offset         "0 0 0"
 
 ```
 #### Vertical
@@ -92,7 +92,5 @@ C:\path\to\img2brs.exe --vertical true --size "10 10 10" --brick_type 1 --materi
 6. Now you can drag and drop images onto the shortcut and it will use these options
 
 
-
 ## WebAssembly Usage
 1. Run ```wasm-pack build``` to generate a JavaScript package
-2. TODO
