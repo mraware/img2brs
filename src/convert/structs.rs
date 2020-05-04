@@ -1,5 +1,7 @@
 use wasm_bindgen::prelude::*;
 
+use web_sys::File;
+
 #[wasm_bindgen]
 pub struct ImgOptions {
   pub size_x: u32,
@@ -30,4 +32,32 @@ impl ImgOptions {
       offset_z: offset_z
     }
   }
+}
+
+#[wasm_bindgen]
+pub struct BrsResult {
+  file: File,
+  count: u32
+}
+
+#[wasm_bindgen]
+impl BrsResult {
+  pub fn new(file: File, count: u32) -> BrsResult {
+    BrsResult { 
+      file: file,
+      count: count
+    }
+  }
+  #[wasm_bindgen(method, getter, js_name = getFile)]
+  pub fn get_file(&self) -> File {
+    return self.file.clone();
+  }
+  #[wasm_bindgen(method, getter, js_name = getCount)]
+  pub fn get_count(&self) -> u32 {
+    return self.count;
+  }
+}
+
+pub struct ConvertData {
+  pub count: u32
 }
