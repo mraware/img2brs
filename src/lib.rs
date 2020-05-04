@@ -30,7 +30,7 @@ extern {
 }
 
 #[wasm_bindgen]
-pub fn img2brs(image_str: ArrayBuffer, name: &str, options: ImgOptions) -> Result<File, JsValue> {
+pub fn img2brs(image_str: ArrayBuffer, name: &str, options: ImgOptions) -> Result<BrsResult, JsValue> {
     utils::set_panic_hook();
 
     let image_uint8 = Uint8Array::new(&JsValue::from(&image_str));
@@ -50,7 +50,7 @@ pub fn img2brs(image_str: ArrayBuffer, name: &str, options: ImgOptions) -> Resul
   
     let mut brs_vec: Vec<u8> = vec![];
 
-    convert::convert(&img, &mut brs_vec, options);
+    let convert_data = convert::convert(&img, &mut brs_vec, options);
 
     let uint_array = Uint8Array::new(&JsValue::from_serde(&brs_vec).unwrap());
     let array_buffer = uint_array.buffer();
@@ -58,5 +58,5 @@ pub fn img2brs(image_str: ArrayBuffer, name: &str, options: ImgOptions) -> Resul
     array.push(&JsValue::from(&array_buffer));
     let file = File::new_with_buffer_source_sequence(&array, name).unwrap();
 
-    return Ok(file);
+    return Ok(BrsResult::new(file, convert_data.count));
 }

@@ -44,7 +44,7 @@ pub fn convert_path(path: &String, options: ImgOptions) {
   convert(&img, &mut file, options);
 }
 
-pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions) {
+pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions) -> ConvertData {
     let size = (options.size_x, options.size_y, options.size_z);
     let asset_name_index = options.asset_name_index;
     let vertical = options.vertical;
@@ -64,7 +64,13 @@ pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions
         }
     }
 
+    let convert_data = ConvertData {
+      count: bricks.len() as u32
+    };
+
     write_brs(writer, bricks, asset_name_index, material_index);
+
+    return convert_data
 }
 
 fn get_image(path: &str) -> DynamicImage {
