@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook", "chrono/wasmbind"]
 
 [dependencies]
-brs = "0.1"
+brs = "0.2.0"
 image = { version = "0.23.0", default-features = false, features = ["gif", "jpeg", "ico", "png", "pnm", "tga", "tiff", "webp", "bmp", "hdr", "dxt", "dds"] } 
 wasm-bindgen-futures = "0.4.12"
 js-sys = "0.3.39"
