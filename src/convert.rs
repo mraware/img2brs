@@ -110,7 +110,7 @@ fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgb
         visibility: true,
         material_index: 0,
         color: color_mode,
-        owner_index: 0
+        owner_index: None,
     };
 
     return brick;
@@ -121,13 +121,6 @@ fn write_brs<T: Write>(mut writer: &mut T, bricks: Vec<Brick>, asset_name_index:
         id: Uuid::parse_str("ffffffff-ffff-ffff-ffff-ffffffffffff").unwrap(),
         name: String::from("PUBLIC")
     };
-
-    let brick_owners = vec![
-        User {
-            id: Uuid::parse_str("ffffffff-ffff-ffff-ffff-ffffffffffff").unwrap(),
-            name: String::from("PUBLIC")
-        }
-    ];
 
     let brick_name = lists::get_brick_assets()[asset_name_index as usize].clone();
     let material_name = lists::get_materials()[material_index as usize].clone();
@@ -141,7 +134,7 @@ fn write_brs<T: Write>(mut writer: &mut T, bricks: Vec<Brick>, asset_name_index:
         brick_assets: vec![brick_name],
         colors: vec![],
         materials: vec![material_name],
-        brick_owners,
+        brick_owners: vec![],
         bricks
     };
 
