@@ -1,6 +1,6 @@
 [package]
 name = "img2brs"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["mraware"]
 edition = "2018"
 
