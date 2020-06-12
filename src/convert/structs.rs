@@ -13,12 +13,13 @@ pub struct ImgOptions {
   pub remove_alpha: bool,
   pub offset_x: i32,
   pub offset_y: i32,
-  pub offset_z: i32
+  pub offset_z: i32,
+  pub raw: bool
 }
 
 #[wasm_bindgen]
 impl ImgOptions {
-  pub fn new(size_x: u32, size_y: u32, size_z: u32, asset_name_index: u32, vertical: bool, material_index: u32, remove_alpha: bool, offset_x: i32, offset_y: i32, offset_z: i32) -> ImgOptions {
+  pub fn new(size_x: u32, size_y: u32, size_z: u32, asset_name_index: u32, vertical: bool, material_index: u32, remove_alpha: bool, offset_x: i32, offset_y: i32, offset_z: i32, raw: bool) -> ImgOptions {
     ImgOptions { 
       size_x: size_x,
       size_y: size_y,
@@ -29,7 +30,8 @@ impl ImgOptions {
       remove_alpha: remove_alpha,
       offset_x: offset_x,
       offset_y: offset_y,
-      offset_z: offset_z
+      offset_z: offset_z,
+      raw: raw
     }
   }
 }

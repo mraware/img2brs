@@ -51,6 +51,7 @@ pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions
     let material_index = options.material_index;
     let remove_alpha = options.remove_alpha;
     let offset = (options.offset_x,  options.offset_y, options.offset_z);
+    let raw = options.raw;
     let dim = img.dimensions();
     let mut bricks: Vec<Brick> = Vec::with_capacity((dim.0 * dim.1) as usize);
 
@@ -58,7 +59,7 @@ pub fn convert<T: Write>(img: &DynamicImage, writer: &mut T, options: ImgOptions
         for y in 0..dim.1 {
             let px = img.get_pixel(x, y);
             if px[3] > 0 && !(material_index == 2 && px[3] < 100) && (!remove_alpha || (px[3] >= 255 && remove_alpha)) {
-                let brick = pixel_to_brick(x, y, size, vertical, px, dim, offset);
+                let brick = pixel_to_brick(x, y, size, vertical, px, dim, offset, raw);
                 bricks.push(brick);
             }
         }
@@ -86,8 +87,23 @@ fn get_image(path: &str) -> DynamicImage {
     return img;
 }
 
-fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32), offset: (i32, i32, i32)) -> Brick {
-    let color: Color = Color::from_rgba(px[0], px[1], px[2], px[3]);
+fn pixel_to_brick(x: u32, y: u32, size: (u32, u32, u32), vertical: bool, px: Rgba<u8>, dim: (u32, u32), offset: (i32, i32, i32), raw: bool) -> Brick {
+    //Color > 0.04045 ? pow( Color * (1.0 / 1.055) + 0.0521327, 2.4 ) : Color * (1.0 / 12.92)
+    let color: Color = if raw {
+      Color::from_rgba(
+        px[0],
+        px[1],
+        px[2],
+        px[3]
+      )
+    } else {
+      Color::from_rgba(
+        (if (px[0] as f64/255.0) > 0.04045 { (((px[0] as f64/255.0) / 1.055) + 0.0521327).powf(2.4) } else { ((px[0] as f64/255.0) ) / 12.92 } * 255.0) as u8,
+        (if (px[1] as f64/255.0) > 0.04045 { (((px[1] as f64/255.0) / 1.055) + 0.0521327).powf(2.4) } else { ((px[1] as f64/255.0) ) / 12.92 } * 255.0) as u8,
+        (if (px[2] as f64/255.0) > 0.04045 { (((px[2] as f64/255.0) / 1.055) + 0.0521327).powf(2.4) } else { ((px[2] as f64/255.0) ) / 12.92 } * 255.0) as u8, 
+        px[3]
+      )
+    };
 
     let x_adj = if vertical { (x * size.1 * 2 + size.1) as i32 } else { (x * size.0 * 2 + size.0) as i32 };
     let y_adj = if vertical { (y * size.0 * 2 + size.0) as i32 } else { (y * size.1 * 2 + size.1) as i32 };
