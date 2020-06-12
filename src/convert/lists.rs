@@ -1,7 +1,10 @@
 pub fn get_brick_assets() -> Vec<String> {
     vec![
         String::from("PB_DefaultBrick"),
-        String::from("PB_DefaultTile")
+        String::from("PB_DefaultTile"),
+        String::from("PB_DefaultSideWedge"),
+        String::from("PB_DefaultSideWedgetile"),
+        String::from("PB_DefaultWedge"),
     ]
 }
 
