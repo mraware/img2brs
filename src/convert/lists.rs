@@ -5,6 +5,7 @@ pub fn get_brick_assets() -> Vec<String> {
         String::from("PB_DefaultSideWedge"),
         String::from("PB_DefaultSideWedgetile"),
         String::from("PB_DefaultWedge"),
+        String::from("PB_DefaultMicroBrick"),
     ]
 }
 

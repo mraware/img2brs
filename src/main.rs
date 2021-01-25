@@ -89,6 +89,7 @@ fn collect_options(args: &Vec<String>) -> (&String, ImgOptions) {
           offset_x: offset_split[0].parse::<i32>().unwrap(),
           offset_y: offset_split[1].parse::<i32>().unwrap(),
           offset_z: offset_split[2].parse::<i32>().unwrap(),
+          raw: false
         }
     );
 
